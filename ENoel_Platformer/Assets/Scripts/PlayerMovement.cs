@@ -56,4 +56,20 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.color = _isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
     }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Moving Platform"))
+        {
+            transform.SetParent(other.transform, true);
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Moving Platform"))
+        {
+            transform.SetParent(null, true);
+        }
+    }
 }
