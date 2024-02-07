@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 23563430}
   - component: {fileID: 23563431}
   m_Layer: 6
-  m_Name: Circle
+  m_Name: Left Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -436,8 +436,9 @@ GameObject:
   m_Component:
   - component: {fileID: 653185991}
   - component: {fileID: 653185992}
+  - component: {fileID: 653185993}
   m_Layer: 6
-  m_Name: Capsule
+  m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -512,6 +513,27 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!95 &653185993
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 653185990}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a363c2bc063568145bdfd2135e8304d3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &780895924
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,7 +590,7 @@ GameObject:
   - component: {fileID: 791650600}
   - component: {fileID: 791650601}
   m_Layer: 6
-  m_Name: Circle (1)
+  m_Name: Right Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -651,8 +673,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1103705223}
   - component: {fileID: 1103705222}
-  - component: {fileID: 1103705221}
   - component: {fileID: 1103705220}
+  - component: {fileID: 1103705221}
+  - component: {fileID: 1103705224}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -756,6 +779,21 @@ Transform:
   - {fileID: 653185991}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1103705224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1103705219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af727b4dbf85f6a49b76b051a19afbc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 1103705222}
+  animator: {fileID: 653185993}
+  playerMovement: {fileID: 1103705221}
 --- !u!1 &2097097947
 GameObject:
   m_ObjectHideFlags: 0
