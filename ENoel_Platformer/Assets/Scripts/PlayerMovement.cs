@@ -15,14 +15,20 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rb;
 
     private float _xMoveInput;
+    private float xDesiredMovement;
+    private float xDampenMovement;
 
     private bool _shouldJump;
     private bool _isGrounded;
+    private bool _canWallJumpRight;
+    private bool _canWallJumpLeft;
+
     public bool IsGrounded => _isGrounded;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
+        xDampenMovement = 1;
     }
 
     // Update is called once per frame
@@ -38,23 +44,65 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         Collider2D col = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
-        _isGrounded = col != null;
+        Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.3f, transform.position.y + 0.75f), new Vector2(0.4f, 0.1f), 0f, groundLayer);
+        Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.3f, transform.position.y + 0.75f), new Vector2(0.4f, 0.1f), 0f, groundLayer);
 
-        _rb.velocity = new Vector2(_xMoveInput, _rb.velocity.y);
-        if (_shouldJump )
+        _isGrounded = col != null;
+        _canWallJumpRight = wallColRight != null;
+        _canWallJumpLeft = wallColLeft != null;
+
+        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement, _rb.velocity.y);
+
+        if (_isGrounded)
+        {
+            xDesiredMovement = 0;
+            xDampenMovement = 1;
+        }
+        else if (xDesiredMovement > 0)
+        {
+            xDesiredMovement -= 0.25f;
+        }
+        else if (xDesiredMovement < 0)
+        {
+            xDesiredMovement += 0.25f;
+        }
+
+        // give the player less control after a wall jump
+        if (xDampenMovement < 1)
+        {
+            xDampenMovement += 0.025f;
+        }
+
+        if (_shouldJump)
         {
             if (_isGrounded)
             {
                 _rb.AddForce(Vector2.up * jumpForce);
             }
-            _shouldJump= false;
+            else if (_canWallJumpRight)
+            {
+                _rb.velocity = Vector2.zero;
+                xDesiredMovement = 10.0f;
+                xDampenMovement = 0.1f;
+                _rb.AddForce(Vector2.up * jumpForce);
+            }
+            else if (_canWallJumpLeft)
+            {
+                _rb.velocity = Vector2.zero;
+                xDesiredMovement = -10.0f;
+                xDampenMovement = 0.1f;
+                _rb.AddForce(Vector2.up * jumpForce);
+            }
+            _shouldJump = false;
         }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = _isGrounded ? Color.green : Color.red;
+        Gizmos.color = _canWallJumpLeft ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
+        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.3f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.1f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.3f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.1f));
     }
 
     private void OnCollisionEnter2D(Collision2D other)
