@@ -22,11 +22,12 @@ public class PlayerMovement : MonoBehaviour
     private bool _shouldJump;
     private bool _shouldCrouch;
     private bool _isGrounded;
-    private bool _canWallJumpRight;
-    private bool _canWallJumpLeft;
+
+    private bool canWallJumpRight;
+    private bool canWallJumpLeft;
 
     private bool crouching;
-    private bool canUncrouch = true;
+    private bool canUncrouch;
 
     public bool IsGrounded => _isGrounded;
 
@@ -56,26 +57,34 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.LeftControl))
         {
-            if (canUncrouch)
-            {
-                _shouldCrouch = false;
-            }
+            _shouldCrouch = false;
         }
     }
 
     private void FixedUpdate()
     {
+        Debug.Log(canUncrouch);
         Collider2D col = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
-        Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.1f), 0f, groundLayer);
-        Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.1f), 0f, groundLayer);
+        Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
+        Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
+        Collider2D crouchCol = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y + 0.75f), new Vector2(0.5f, 0.5f), 0f, groundLayer);
 
         _isGrounded = col != null;
-        _canWallJumpRight = wallColRight != null;
-        _canWallJumpLeft = wallColLeft != null;
+        canWallJumpRight = wallColRight != null;
+        canWallJumpLeft = wallColLeft != null;
+
+        if (crouchCol != null)
+        {
+            canUncrouch = false;
+        }
+        else
+        {
+            canUncrouch = true;
+        }
 
         _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement, _rb.velocity.y);
 
-        RunCrouching();
+        Crouching();
 
         if (_isGrounded)
         {
@@ -106,14 +115,14 @@ public class PlayerMovement : MonoBehaviour
             {
                 _rb.AddForce(Vector2.up * jumpForce);
             }
-            else if (_canWallJumpRight)
+            else if (canWallJumpRight)
             {
                 _rb.velocity = Vector2.zero;
                 xDesiredMovement = 10.0f;
                 xDampenMovement = 0.1f;
                 _rb.AddForce(Vector2.up * jumpForce);
             }
-            else if (_canWallJumpLeft)
+            else if (canWallJumpLeft)
             {
                 _rb.velocity = Vector2.zero;
                 xDesiredMovement = -10.0f;
@@ -128,8 +137,9 @@ public class PlayerMovement : MonoBehaviour
     {
         Gizmos.color = _isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
-        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.1f));
-        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.1f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.3f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.3f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x, transform.position.y + 0.75f, transform.position.z), new Vector2(0.5f, 0.5f));
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -149,31 +159,17 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // get parent scale and multiply it maybe
-    private void RunCrouching()
+    private void Crouching()
     {
         if (_shouldCrouch)
         {
-            if(transform.parent == null)
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 0.5f, transform.localScale.z);
-            }
-            else
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 0.5f, transform.localScale.z);
-            }
+            transform.localScale = new Vector3(transform.localScale.x, 0.5f, transform.localScale.z);
             crouching = true;
             xSpeed = xStartingSpeed / 4;
         }
-        else
+        else if (canUncrouch)
         {
-            if (transform.parent == null)
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
-            }
-            else
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
-            }
+            transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
             crouching = false;
             xSpeed = xStartingSpeed;
         }
@@ -181,14 +177,7 @@ public class PlayerMovement : MonoBehaviour
         // airbourne and crouching
         if (!_isGrounded && crouching)
         {
-            if (transform.parent == null)
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
-            }
-            else
-            {
-                transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
-            }
+            transform.localScale = new Vector3(transform.localScale.x, 1.0f, transform.localScale.z);
             crouching = false;
             xSpeed = xStartingSpeed;
         }
