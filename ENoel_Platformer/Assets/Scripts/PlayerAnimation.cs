@@ -18,11 +18,11 @@ public class PlayerAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(_facingRight && rb.velocity.x < -0.1)
+        if (_facingRight && rb.velocity.x < -0.1 && !playerMovement.flipping)
         {
             Flip();
         }
-        else if (!_facingRight && rb.velocity.x > 0.1)
+        else if (!_facingRight && rb.velocity.x > 0.1 && !playerMovement.flipping)
         {
             Flip();
         }
