@@ -63,7 +63,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Debug.Log(canUncrouch);
         Collider2D col = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
         Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
         Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
@@ -155,12 +154,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (crouching)
                 {
-                    if (_rb.velocity.x != 0)
+                    if (_rb.velocity.x != 0 && canUncrouch)
                     {
                         CrouchJump();
                     }
                     else if (canUncrouch)
                     {
+                        Debug.Log("bleh");
                         _rb.AddForce(Vector2.up * jumpForce);
                     }
                 }
