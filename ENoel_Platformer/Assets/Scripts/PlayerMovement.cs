@@ -19,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     private float xDesiredMovement;
     private float xDampenMovement;
 
+    private float xInitialVelocity;
+
     private bool _shouldJump;
     private bool _shouldCrouch;
     private bool _isGrounded;
@@ -104,9 +106,10 @@ public class PlayerMovement : MonoBehaviour
         // if the player hits a wall while a special jump is occuring then stop them
         if (!_isGrounded && xDesiredMovement != 0)
         {
+            xInitialVelocity = 0;
             hitCeiling = true;
             xDesiredMovement = 0;
-            xDampenMovement = 1;
+            xDampenMovement = 0.5f;
             _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y / 2);
         }
 
@@ -126,36 +129,63 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandlePlayerMovement()
     {
-        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement, _rb.velocity.y);
+        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement + xInitialVelocity, _rb.velocity.y);
 
         Crouching();
 
         // if the player is grounded reset their movement modifiers
         if (_isGrounded)
         {
+            xInitialVelocity = 0;
             canDive = true;
             hitCeiling = false;
             flipping = false;
             xDesiredMovement = 0;
             xDampenMovement = 1;
         }
-        // if player is not flipping then count them down
-        else if (!flipping)
+        else
         {
-            if (xDesiredMovement > 0)
+            // bring down the initial velocity quicker if the player is attempting to change directions
+            if (transform.localScale.x > 0 && _xMoveInput < 0 && xInitialVelocity > 0)
             {
-                xDesiredMovement -= 0.25f;
+                xInitialVelocity -= 0.5f;
             }
-            else if (xDesiredMovement < 0)
+            else if (transform.localScale.x < 0 && _xMoveInput > 0 && xInitialVelocity < 0)
             {
-                xDesiredMovement += 0.25f;
+                xInitialVelocity += 0.5f;
+            }
+
+            // if player is not flipping then count the movement modifiers down
+            if (!flipping)
+            {
+                if (xDesiredMovement > 0)
+                {
+                    xDesiredMovement -= 0.25f;
+                }
+                else if (xDesiredMovement < 0)
+                {
+                    xDesiredMovement += 0.25f;
+                }
             }
         }
 
-        // give the player less control after a special jump
+        // give the player less control after a non-flip jump
         if (xDampenMovement < 1 && !flipping)
         {
             xDampenMovement += 0.025f;
+
+            // slowly bring initial velocity back to 0
+            if (xInitialVelocity != 0)
+            {
+                if (xInitialVelocity < 0)
+                {
+                    xInitialVelocity += 0.05f;
+                }
+                else if (xInitialVelocity > 0)
+                {
+                    xInitialVelocity -= 0.05f;
+                }
+            }
         }
         else if (xDampenMovement < 1 && flipping)
         {
@@ -180,6 +210,11 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     canDive = true;
+                    if (!canWallJumpLeft && !canWallJumpRight)
+                    {
+                        xInitialVelocity = _rb.velocity.x;
+                    }
+                    xDampenMovement = 0.1f;
                     _rb.AddForce(Vector2.up * jumpForce);
                 }
             }
@@ -199,8 +234,13 @@ public class PlayerMovement : MonoBehaviour
     private void Dive()
     {
         canDive = false;
-        if (transform.localScale.x > 0)
+        if (_xMoveInput > 0)
         {
+            // if the player is heading in one direction, yet they want to dive in another, then flip them
+            if (transform.localScale.x < 0)
+            {
+                xInitialVelocity = -xInitialVelocity;
+            }
             xDesiredMovement = 10.0f;
             xDampenMovement = 0f;
             if (_rb.velocity.y < 5)
@@ -210,8 +250,13 @@ public class PlayerMovement : MonoBehaviour
             }
             xSpeed = xStartingSpeed;
         }
-        else if (transform.localScale.x < 0)
+        else if (_xMoveInput < 0)
         {
+            // if the player is heading in one direction, yet they want to dive in another, then flip them
+            if (transform.localScale.x > 0)
+            {
+                xInitialVelocity = -xInitialVelocity;
+            }
             xDesiredMovement = -10.0f;
             xDampenMovement = 0f;
             if (_rb.velocity.y < 5)
@@ -220,6 +265,32 @@ public class PlayerMovement : MonoBehaviour
                 _rb.AddForce(Vector2.up * (jumpForce * 0.5f));
             }
             xSpeed = xStartingSpeed;
+        }
+        // if the player is not pressing a direction then send them in the direction they are already looking
+        else
+        {
+            if (transform.localScale.x > 0)
+            {
+                xDesiredMovement = 10.0f;
+                xDampenMovement = 0f;
+                if (_rb.velocity.y < 5)
+                {
+                    _rb.velocity = new Vector2(_rb.velocity.x, 0);
+                    _rb.AddForce(Vector2.up * (jumpForce * 0.5f));
+                }
+                xSpeed = xStartingSpeed;
+            }
+            else if (transform.localScale.x < 0)
+            {
+                xDesiredMovement = -10.0f;
+                xDampenMovement = 0f;
+                if (_rb.velocity.y < 5)
+                {
+                    _rb.velocity = new Vector2(_rb.velocity.x, 0);
+                    _rb.AddForce(Vector2.up * (jumpForce * 0.5f));
+                }
+                xSpeed = xStartingSpeed;
+            }
         }
     }
 
@@ -296,6 +367,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallJump()
     {
+        canDive = false;
         if (canWallJumpRight)
         {
             _rb.velocity = Vector2.zero;
@@ -310,7 +382,6 @@ public class PlayerMovement : MonoBehaviour
             xDampenMovement = 0.1f;
             _rb.AddForce(Vector2.up * jumpForce);
         }
-        canDive = true;
     }
 
     private void CrouchJump()
