@@ -366,9 +366,16 @@ public class PlayerMovement : MonoBehaviour
         canDive = true;
     }
 
+    IEnumerator Co_EnableDiveDelayed()
+    {
+        yield return new WaitForSeconds(0.75f);
+        canDive = true;
+    }
+
     private void WallJump()
     {
         canDive = false;
+        xInitialVelocity = 0;
         if (canWallJumpRight)
         {
             _rb.velocity = Vector2.zero;
@@ -383,6 +390,7 @@ public class PlayerMovement : MonoBehaviour
             xDampenMovement = 0.1f;
             _rb.AddForce(Vector2.up * jumpForce);
         }
+        StartCoroutine(Co_EnableDiveDelayed());
     }
 
     private void CrouchJump()
