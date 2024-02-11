@@ -117,9 +117,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 1
+  flipping: 0
 --- !u!114 &5730705518878574481
 MonoBehaviour:
   m_ObjectHideFlags: 0
