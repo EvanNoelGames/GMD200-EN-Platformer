@@ -210,7 +210,8 @@ public class PlayerMovement : MonoBehaviour
                 else
                 {
                     canDive = true;
-                    if (!canWallJumpLeft && !canWallJumpRight)
+                    // set the initial velocity only if the player is not running into a wall
+                    if (!canWallJumpLeft && _rb.velocity.x > 0 || !canWallJumpRight && _rb.velocity.x < 0)
                     {
                         xInitialVelocity = _rb.velocity.x;
                     }
