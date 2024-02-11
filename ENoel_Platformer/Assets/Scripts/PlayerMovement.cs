@@ -30,6 +30,8 @@ public class PlayerMovement : MonoBehaviour
     private bool crouching;
     private bool canUncrouch;
 
+    private bool canDive;
+
     public bool flipping;
 
     public bool IsGrounded => _isGrounded;
@@ -131,6 +133,7 @@ public class PlayerMovement : MonoBehaviour
         // if the player is grounded reset their movement modifiers
         if (_isGrounded)
         {
+            canDive = true;
             hitCeiling = false;
             flipping = false;
             xDesiredMovement = 0;
@@ -159,7 +162,7 @@ public class PlayerMovement : MonoBehaviour
             xDampenMovement += 0.005f;
         }
 
-            if (_shouldJump)
+        if (_shouldJump)
         {
             if (_isGrounded)
             {
@@ -176,15 +179,47 @@ public class PlayerMovement : MonoBehaviour
                 }
                 else
                 {
+                    canDive = true;
                     _rb.AddForce(Vector2.up * jumpForce);
                 }
             }
             // if the player is not on the ground (but attempting to jump) check if they can walljump
-            else
+            else if (canWallJumpLeft || canWallJumpRight)
             {
                 WallJump();
             }
+            else if (canDive)
+            {
+                Dive();
+            }
             _shouldJump = false;
+        }
+    }
+
+    private void Dive()
+    {
+        canDive = false;
+        if (transform.localScale.x > 0)
+        {
+            xDesiredMovement = 10.0f;
+            xDampenMovement = 0f;
+            if (_rb.velocity.y < 5)
+            {
+                _rb.velocity = new Vector2(_rb.velocity.x, 0);
+                _rb.AddForce(Vector2.up * (jumpForce * 0.5f));
+            }
+            xSpeed = xStartingSpeed;
+        }
+        else if (transform.localScale.x < 0)
+        {
+            xDesiredMovement = -10.0f;
+            xDampenMovement = 0f;
+            if (_rb.velocity.y < 5)
+            {
+                _rb.velocity = new Vector2(_rb.velocity.x, 0);
+                _rb.AddForce(Vector2.up * (jumpForce * 0.5f));
+            }
+            xSpeed = xStartingSpeed;
         }
     }
 
@@ -256,6 +291,7 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitUntil(() => Vector2.Distance(new Vector2(_rb.velocity.y, 0), Vector2.zero) < 0.05f);
         yield return new WaitForSeconds(0.05f);
         flipping = false;
+        canDive = true;
     }
 
     private void WallJump()
@@ -274,6 +310,7 @@ public class PlayerMovement : MonoBehaviour
             xDampenMovement = 0.1f;
             _rb.AddForce(Vector2.up * jumpForce);
         }
+        canDive = true;
     }
 
     private void CrouchJump()
@@ -300,5 +337,6 @@ public class PlayerMovement : MonoBehaviour
             crouching = false;
             xSpeed = xStartingSpeed;
         }
+        canDive = true;
     }
 }
