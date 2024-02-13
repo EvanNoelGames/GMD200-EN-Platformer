@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     private float initalIceVelocity;
     private float yModifier;
 
+    private bool touchingIce;
+
     private bool _shouldJump;
     private bool _shouldCrouch;
     private bool _isGrounded;
@@ -136,6 +138,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ice"))
         {
+            touchingIce = true;
             if (!_isGrounded)
             {
                 yModifier -= 0.05f;
@@ -156,6 +159,10 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            initalIceVelocity = 0;
+        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
@@ -163,6 +170,10 @@ public class PlayerMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Moving Platform"))
         {
             transform.SetParent(null, true);
+        }
+        else if (other.gameObject.CompareTag("Ice"))
+        {
+            touchingIce = false;
         }
     }
 
@@ -206,6 +217,11 @@ public class PlayerMovement : MonoBehaviour
                 {
                     xDesiredMovement += 0.25f;
                 }
+            }
+
+            if (yModifier < 0 && !touchingIce)
+            {
+                yModifier += 0.1f;
             }
 
             initalIceVelocity = 0f;
