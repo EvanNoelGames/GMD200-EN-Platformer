@@ -53,7 +53,7 @@ public class FallingPlatform : MonoBehaviour
         yield return new WaitForSeconds(timeBeforeFalling);
         falling = true;
         _rb.gravityScale = 0.1f;
-        _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        _rb.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX;
         StartCoroutine(Co_Respawn());
     }
 }
