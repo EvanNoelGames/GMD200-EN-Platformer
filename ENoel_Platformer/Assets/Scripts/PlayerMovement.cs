@@ -141,7 +141,10 @@ public class PlayerMovement : MonoBehaviour
             touchingIce = true;
             if (!_isGrounded)
             {
-                yModifier -= 0.05f;
+                if (_rb.velocity.y < 0)
+                {
+                    yModifier -= 0.05f;
+                }
             }
             else
             {
