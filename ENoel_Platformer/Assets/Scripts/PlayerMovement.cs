@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     private float xDampenMovement;
 
     private float xInitialVelocity;
+    private float initalIceVelocity;
+    private float yModifier;
 
     private bool _shouldJump;
     private bool _shouldCrouch;
@@ -104,18 +106,55 @@ public class PlayerMovement : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         // if the player hits a wall while a special jump is occuring then stop them
-        if (!_isGrounded && xDesiredMovement != 0)
+        if (!_isGrounded)
         {
-            xInitialVelocity = 0;
-            hitCeiling = true;
-            xDesiredMovement = 0;
-            xDampenMovement = 0.5f;
-            _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y / 2);
+            if (xDesiredMovement != 0)
+            {
+                xInitialVelocity = 0;
+                hitCeiling = true;
+                xDesiredMovement = 0;
+                xDampenMovement = 0.5f;
+                _rb.velocity = new Vector2(_rb.velocity.x, _rb.velocity.y / 2);
+            }
+        }
+
+        if (!other.gameObject.CompareTag("Ice"))
+        {
+            if (_isGrounded)
+            {
+                initalIceVelocity = 0;
+            }
         }
 
         if (other.gameObject.CompareTag("Moving Platform"))
         {
             transform.SetParent(other.transform, true);
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Ice"))
+        {
+            if (!_isGrounded)
+            {
+                yModifier -= 0.05f;
+            }
+            else
+            {
+                if (_xMoveInput != 0)
+                {
+                    initalIceVelocity = Mathf.Clamp(_rb.velocity.x * 0.75f, -10f, 10f);
+                }
+                if (initalIceVelocity > 0)
+                {
+                    initalIceVelocity -= 0.1f;
+                }
+                else if (initalIceVelocity < 0)
+                {
+                    initalIceVelocity += 0.1f;
+                }
+            }
         }
     }
 
@@ -129,13 +168,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandlePlayerMovement()
     {
-        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement + xInitialVelocity, _rb.velocity.y);
+        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement + xInitialVelocity + initalIceVelocity, _rb.velocity.y + yModifier);
 
         Crouching();
 
         // if the player is grounded reset their movement modifiers
         if (_isGrounded)
         {
+            yModifier = 0;
             xInitialVelocity = 0;
             canDive = true;
             hitCeiling = false;
@@ -167,6 +207,8 @@ public class PlayerMovement : MonoBehaviour
                     xDesiredMovement += 0.25f;
                 }
             }
+
+            initalIceVelocity = 0f;
         }
 
         // give the player less control after a non-flip jump
