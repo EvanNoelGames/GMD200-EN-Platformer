@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBot : MonoBehaviour
@@ -24,12 +25,12 @@ public class EnemyBot : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb.velocity = new Vector2(transform.localScale.x * speed, 0);
+        _rb.velocity = new Vector2(transform.localScale.x * speed, _rb.velocity.y);
 
-        Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.5f, transform.position.y), new Vector2(0.4f, 0.75f), 0f, groundLayer);
-        Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.5f, transform.position.y), new Vector2(0.4f, 0.75f), 0f, groundLayer);
-        Collider2D groundColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.5f, transform.position.y - 0.5f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
-        Collider2D groundColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.5f, transform.position.y - 0.5f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
+        Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.25f, transform.position.y), new Vector2(0.4f, 0.75f), 0f, groundLayer);
+        Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.25f, transform.position.y), new Vector2(0.4f, 0.75f), 0f, groundLayer);
+        Collider2D groundColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.7f, transform.position.y - 0.5f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
+        Collider2D groundColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.7f, transform.position.y - 0.5f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
 
         touchingRightWall = wallColRight != null;
         touchingLeftWall = wallColLeft != null;
@@ -54,26 +55,25 @@ public class EnemyBot : MonoBehaviour
 
         if (touchingRightWall || touchingLeftWall || touchingGroundLeft || touchingGroundRight)
         {
-            Debug.Log("flip");
             Flip();
         }
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.5f, transform.position.y, transform.position.z), new Vector2(0.4f, 0.75f));
-        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.5f, transform.position.y, transform.position.z), new Vector2(0.4f, 0.75f));
-        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.5f, transform.position.y - 0.5f, transform.position.z), new Vector2(0.4f, 0.3f));
-        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.5f, transform.position.y - 0.5f, transform.position.z), new Vector2(0.4f, 0.3f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.25f, transform.position.y, transform.position.z), new Vector2(0.4f, 0.75f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.25f, transform.position.y, transform.position.z), new Vector2(0.4f, 0.75f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.7f, transform.position.y - 0.5f, transform.position.z), new Vector2(0.4f, 0.3f));
+        Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.7f, transform.position.y - 0.5f, transform.position.z), new Vector2(0.4f, 0.3f));
     }
 
     private void Flip()
     {
-        if (touchingRightWall || !touchingGroundRight)
+        if (touchingRightWall || touchingGroundRight)
         {
             transform.localScale = new Vector2(1, transform.localScale.y);
         }
-        else if (touchingLeftWall || !touchingGroundLeft)
+        else if (touchingLeftWall || touchingGroundLeft)
         {
             transform.localScale = new Vector2(-1, transform.localScale.y);
         }
