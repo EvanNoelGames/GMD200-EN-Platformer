@@ -130,7 +130,10 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.CompareTag("Moving Platform"))
         {
-            transform.SetParent(other.transform, true);
+            if (transform.position.y > other.transform.position.y)
+            {
+                transform.SetParent(other.transform, true);
+            }
         }
     }
 

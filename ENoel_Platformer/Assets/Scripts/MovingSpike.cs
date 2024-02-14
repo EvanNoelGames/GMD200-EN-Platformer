@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingSpike : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
 
@@ -21,7 +21,8 @@ public class MovingPlatform : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        transform.position = Vector2.MoveTowards(transform.position, _currentPoint.position, moveSpeed * 10f);
+        transform.Rotate(new Vector3(0, 0, -moveSpeed));
+        transform.position = Vector2.MoveTowards(transform.position, _currentPoint.position, moveSpeed * Time.deltaTime);
         if (Vector2.Distance(transform.position, _currentPoint.position) < 0.01f)
         {
             _pointIndex++;
