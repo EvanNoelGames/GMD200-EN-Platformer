@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
@@ -49,6 +50,11 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
         // update the timer text
         timerText.SetText(((((int)timer) / 60).ToString()) + ":" + ((((int)timer)) % 60).ToString("D2"));
 
