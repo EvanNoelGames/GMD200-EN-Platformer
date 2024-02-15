@@ -8,6 +8,8 @@ TagManager:
   - Hazard
   - Checkpoint
   - Ice
+  - Star
+  - Goal
   layers:
   - Default
   - TransparentFX

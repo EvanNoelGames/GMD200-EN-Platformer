@@ -15,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D _rb;
 
+    private PlayerManager _playerManager;
+
     private float _xMoveInput;
     private float xDesiredMovement;
     private float xDampenMovement;
@@ -44,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        _playerManager = GetComponent<PlayerManager>();
         xStartingSpeed = xSpeed;
         flipping = false;
         xDampenMovement = 1;
@@ -93,7 +96,14 @@ public class PlayerMovement : MonoBehaviour
             canUncrouch = true;
         }
 
-        HandlePlayerMovement();
+        if (_playerManager.Playing)
+        {
+            HandlePlayerMovement();
+        }
+        else
+        {
+            _rb.velocity = Vector3.zero;
+        }
     }
 
     private void OnDrawGizmos()
