@@ -5,11 +5,14 @@ using UnityEngine;
 public class PlayerRespawn : MonoBehaviour
 {
     [SerializeField] private Checkpoint respawn;
+    public PlayerMovement playerMovement;
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Hazard"))
         {
             transform.position = new Vector3(respawn.transform.position.x, respawn.transform.position.y, transform.position.z);
+            playerMovement.respawn = true;
         }
 
         else if (other.CompareTag("Checkpoint"))

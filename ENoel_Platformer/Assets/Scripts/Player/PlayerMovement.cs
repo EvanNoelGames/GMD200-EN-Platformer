@@ -42,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool flipping;
 
+    public bool respawn;
+
     public bool IsGrounded => _isGrounded;
 
     private void Awake()
@@ -199,7 +201,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandlePlayerMovement()
     {
-        _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement + xInitialVelocity + initalIceVelocity, _rb.velocity.y + yModifier);
+        if (!respawn)
+        {
+            _rb.velocity = new Vector2((_xMoveInput * xDampenMovement) + xDesiredMovement + xInitialVelocity + initalIceVelocity, _rb.velocity.y + yModifier);
+        }
+        else
+        {
+            _rb.velocity = Vector2.zero;
+            StartCoroutine(Co_DoneRespawning());
+        }
 
         Crouching();
 
@@ -308,6 +318,12 @@ public class PlayerMovement : MonoBehaviour
             }
             _shouldJump = false;
         }
+    }
+
+    IEnumerator Co_DoneRespawning()
+    {
+        yield return new WaitForSeconds(1f);
+        respawn = false;
     }
 
     private void Dive()
