@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
     private float xStartingSpeed;
     public float XSpeed => xSpeed;
     [SerializeField] private float jumpForce = 800f;
-    [SerializeField] private float groundCheckRadius = 0.1f;
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody2D _rb;
@@ -80,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Collider2D col = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
+        Collider2D col = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y), new Vector2(0.4f, 0.2f), 0f, groundLayer);
         Collider2D wallColLeft = Physics2D.OverlapBox(new Vector2(transform.position.x + 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
         Collider2D wallColRight = Physics2D.OverlapBox(new Vector2(transform.position.x - 0.2f, transform.position.y + 0.75f), new Vector2(0.4f, 0.3f), 0f, groundLayer);
         Collider2D crouchCol = Physics2D.OverlapBox(new Vector2(transform.position.x, transform.position.y + 0.75f), new Vector2(0.4f, 0.5f), 0f, groundLayer);
@@ -111,7 +110,7 @@ public class PlayerMovement : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = _isGrounded ? Color.green : Color.red;
-        Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
+        Gizmos.DrawWireCube(new Vector3(transform.position.x, transform.position.y, transform.position.z), new Vector2(0.4f, 0.2f));
         Gizmos.DrawWireCube(new Vector3(transform.position.x - 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.3f));
         Gizmos.DrawWireCube(new Vector3(transform.position.x + 0.2f, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.3f));
         Gizmos.DrawWireCube(new Vector3(transform.position.x, transform.position.y + 0.75f, transform.position.z), new Vector2(0.4f, 0.5f));
@@ -441,11 +440,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 if (facingLeft)
                 {
-                    xDesiredMovement =+ 1.75f * ((float)i / 5);
+                    xDesiredMovement = +1.75f * ((float)i / 5);
                 }
                 else
                 {
-                    xDesiredMovement =- 1.75f * ((float)i / 5);
+                    xDesiredMovement = -1.75f * ((float)i / 5);
                 }
             }
             else

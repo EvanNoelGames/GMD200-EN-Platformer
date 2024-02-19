@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 451894404266844155}
   - component: {fileID: 3584708076855485858}
-  - component: {fileID: 8432388620446950810}
+  - component: {fileID: 8965975685539331489}
   - component: {fileID: 4842533787155796963}
   - component: {fileID: 5730705518878574481}
   - component: {fileID: 8025491869136351441}
@@ -65,7 +65,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!70 &8432388620446950810
+--- !u!70 &8965975685539331489
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -114,7 +114,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xSpeed: 10
   jumpForce: 800
-  groundCheckRadius: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
