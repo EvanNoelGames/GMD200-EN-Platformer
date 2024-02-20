@@ -44,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     public bool respawn;
 
     public bool IsGrounded => _isGrounded;
+    public bool Flipping => flipping;
+    public bool WallTouching;
 
     private void Awake()
     {
@@ -57,6 +59,15 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (canWallJumpLeft || canWallJumpRight)
+        {
+            WallTouching = true;
+        }
+        else
+        {
+            WallTouching = false;
+        }
+
         _xMoveInput = Input.GetAxis("Horizontal") * xSpeed;
         if (Input.GetKeyDown(KeyCode.Space))
         {

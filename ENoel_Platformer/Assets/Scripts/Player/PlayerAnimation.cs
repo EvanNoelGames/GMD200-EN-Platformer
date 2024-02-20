@@ -18,17 +18,19 @@ public class PlayerAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (_facingRight && rb.velocity.x < -0.1 && !playerMovement.flipping)
+        if (_facingRight && rb.velocity.x < -0.1 && !playerMovement.flipping && !animator.GetCurrentAnimatorStateInfo(0).IsName("Flipping"))
         {
             Flip();
         }
-        else if (!_facingRight && rb.velocity.x > 0.1 && !playerMovement.flipping)
+        else if (!_facingRight && rb.velocity.x > 0.1 && !playerMovement.flipping && !animator.GetCurrentAnimatorStateInfo(0).IsName("Flipping"))
         {
             Flip();
         }
 
         animator.SetFloat("MoveSpeedX", Mathf.Abs(rb.velocity.x) / playerMovement.XSpeed);
         animator.SetBool("Grounded", playerMovement.IsGrounded);
+        animator.SetBool("Flipping", playerMovement.Flipping);
+        animator.SetBool("WallTouch", playerMovement.WallTouching);
     }
 
     private void Flip()
