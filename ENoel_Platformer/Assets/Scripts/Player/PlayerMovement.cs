@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rb;
 
     private PlayerManager _playerManager;
+    public AudioSource _jumpSound;
 
     private float _xMoveInput;
     private float xDesiredMovement;
@@ -298,15 +299,18 @@ public class PlayerMovement : MonoBehaviour
                 {
                     if (_rb.velocity.x != 0 && canUncrouch)
                     {
+                        _jumpSound.Play();
                         CrouchJump();
                     }
                     else if (canUncrouch)
                     {
+                        _jumpSound.Play();
                         Backflip();
                     }
                 }
                 else
                 {
+                    _jumpSound.Play();
                     canDive = true;
                     // set the initial velocity only if the player is not running into a wall
                     if (!canWallJumpLeft && _rb.velocity.x > 0 || !canWallJumpRight && _rb.velocity.x < 0)
@@ -320,10 +324,12 @@ public class PlayerMovement : MonoBehaviour
             // if the player is not on the ground (but attempting to jump) check if they can walljump
             else if (canWallJumpLeft || canWallJumpRight)
             {
+                _jumpSound.Play();
                 WallJump();
             }
             else if (canDive)
             {
+                _jumpSound.Play();
                 Dive();
             }
             _shouldJump = false;

@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
+    public AudioSource getStar;
+
     public enum time
     {
         gold,
@@ -184,5 +186,10 @@ public class PlayerManager : MonoBehaviour
             }
         }
         endScreen.gameObject.SetActive(true);
+    }
+
+    public void StarSound()
+    {
+        getStar.Play();
     }
 }

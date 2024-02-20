@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class EndScreen : MonoBehaviour
 {
     public PlayerManager playerManager;
+    public AudioSource cheerSound;
 
     public Image star1;
     public Image star2;
@@ -24,6 +25,10 @@ public class EndScreen : MonoBehaviour
 
     private void Awake()
     {
+        if (playerManager.GetStars() == 3)
+        {
+            cheerSound.Play();
+        }
         star1Text = star1.GetComponentInChildren<TextMeshProUGUI>();
         star2Text = star2.GetComponentInChildren<TextMeshProUGUI>();
         star3Text = star3.GetComponentInChildren<TextMeshProUGUI>();

@@ -11,6 +11,7 @@ public class Star : MonoBehaviour
             PlayerManager player = other.GetComponent<PlayerManager>();
             player.AddStar();
             gameObject.SetActive(false);
+            player.StarSound();
         }
     }
 }
